@@ -2,7 +2,7 @@ module C = Configurator.V1
 
 let () =
   C.main ~name:"gmp" @@ fun c ->
-  let default = { C.Pkg_config.libs = [ "-lgmpg" ]; cflags = [] } in
+  let default = { C.Pkg_config.libs = [ "-lgmp" ]; cflags = [] } in
   let conf =
     match C.Pkg_config.get c with
     | None -> default
