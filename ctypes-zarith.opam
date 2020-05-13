@@ -16,12 +16,12 @@ depends: [
   "dune" {>= "1.2"}
   "zarith"
   "ctypes"
-  "ppx_cstubs"
+  "ppx_cstubs" {>= "0.4.1"}
   "conf-pkg-config" {build}
   "ctypes-foreign" {with-test}
   "alcotest" {with-test}
 ]
 
 synopsis: """
-Demo how to mix ctypes and "custom" OCaml types
+Ctypes wrapper for zarith
 """
