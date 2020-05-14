@@ -14,6 +14,7 @@ build: [
 
 depends: [
   "dune" {>= "1.2"}
+  "dune-configurator"
   "zarith"
   "ctypes"
   "ppx_cstubs" {>= "0.4.1"}
