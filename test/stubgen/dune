@@ -14,4 +14,5 @@
  (name test_stubgen)
  (c_names generated_stubs)
  (private_modules generated_bindings)
+ (c_flags (:include ../../lib/c_flags.sexp))
  (libraries ctypes ctypes-zarith ctypes_zarith_test_stubs))

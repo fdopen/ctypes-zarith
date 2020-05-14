@@ -7,5 +7,4 @@
  (name test_ppx)
  (c_names test_ppx_stubs)
  (c_flags (:include ../../lib/c_flags.sexp))
- (c_library_flags (:include ../../lib/c_library_flags.sexp))
  (libraries ctypes ppx_cstubs ctypes-zarith))
