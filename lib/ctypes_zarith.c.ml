@@ -6,15 +6,15 @@ let%c () = header {|
 module MPZ = struct
   let%c t = abstract "__mpz_struct"
 
-  external mpz_clear : t ptr -> void = "mpz_clear" [@@noalloc]
+  external clear : t ptr -> void = "mpz_clear" [@@noalloc]
 
   let make () =
     (* allocate_n zero initializes the memory. It's safe to pass
        such a struct to mpz_clear. *)
-    Ctypes.allocate_n ~finalise:mpz_clear t ~count:1
+    Ctypes.allocate_n ~finalise:clear t ~count:1
 
   [%%c
-  external of_z : zt_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
+  external init_set : zt_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
     = {|
    value z = $zt_; /* not converted. The usual rules for stub code must be
                       obeyed (accessors, memory management (GC), etc.) */
@@ -25,7 +25,7 @@ module MPZ = struct
 
   let of_z x =
     let r = make () in
-    of_z x r;
+    init_set x r;
     r
 
   [%%c
@@ -45,15 +45,15 @@ end
 module MPQ = struct
   let%c t = abstract "__mpq_struct"
 
-  external mpq_clear : t ptr -> void = "mpq_clear" [@@noalloc]
+  external clear : t ptr -> void = "mpq_clear" [@@noalloc]
 
   let make () =
     (* allocate_n zero initializes the memory. It's safe to pass
        such a struct to mpz_clear. *)
-    Ctypes.allocate_n ~finalise:mpq_clear t ~count:1
+    Ctypes.allocate_n ~finalise:clear t ~count:1
 
   [%%c
-  external of_zz :
+  external init_set_zz :
     num_:(Z.t[@ocaml_type]) -> den_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
     = {|
    value num = $num_; /* not converted. The usual rules for stub code must be
@@ -66,9 +66,11 @@ module MPQ = struct
    ml_z_mpz_init_set_z(&p->_mp_den, den);
 |}]
 
+  let init_set x r = init_set_zz (Q.num x) (Q.den x) r
+
   let of_q x =
     let r = make () in
-    of_zz (Q.num x) (Q.den x) r;
+    init_set x r;
     r
 
   [%%c

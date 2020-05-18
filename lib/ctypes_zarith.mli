@@ -2,6 +2,12 @@ module MPZ : sig
 
   type t
 
+  val t : t Ctypes.abstract Ctypes.typ
+
+  val clear : t Ctypes.abstract Ctypes.ptr -> unit
+
+  val init_set : Z.t -> t Ctypes.abstract Ctypes.ptr -> unit
+
   val make : unit -> t Ctypes.abstract Ctypes.ptr
   (** like {!Ctypes.make}, but with finalise and type already specified *)
 
@@ -18,6 +24,12 @@ end
 module MPQ : sig
 
   type t
+
+  val t : t Ctypes.abstract Ctypes.typ
+
+  val clear : t Ctypes.abstract Ctypes.ptr -> unit
+
+  val init_set : Q.t -> t Ctypes.abstract Ctypes.ptr -> unit
 
   val make : unit -> t Ctypes.abstract Ctypes.ptr
   (** like {!Ctypes.make}, but with finalise and type already specified *)
