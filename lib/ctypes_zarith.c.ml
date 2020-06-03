@@ -6,26 +6,32 @@ let%c () = header {|
 module MPZ = struct
   let%c t = abstract "__mpz_struct"
 
+  type ptr = t Ctypes.abstract Ctypes.ptr
+
   external clear : t ptr -> void = "mpz_clear" [@@noalloc]
+
+  external init : t ptr -> void = "mpz_init"
 
   let make () =
     (* allocate_n zero initializes the memory. It's safe to pass
        such a struct to mpz_clear. *)
-    Ctypes.allocate_n ~finalise:clear t ~count:1
+    let r = Ctypes.allocate_n ~finalise:clear t ~count:1 in
+    init r;
+    r
 
   [%%c
-  external init_set : zt_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
+  external set : zt_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
     = {|
    value z = $zt_; /* not converted. The usual rules for stub code must be
                       obeyed (accessors, memory management (GC), etc.) */
    __mpz_struct * p = $tptr_; /* already converted to a native c type, will not
                                  be garbage collected during the stub code */
-   ml_z_mpz_init_set_z(p, z);
+   ml_z_mpz_set_z(p, z);
 |}]
 
   let of_z x =
     let r = make () in
-    init_set x r;
+    set x r;
     r
 
   [%%c
@@ -45,15 +51,21 @@ end
 module MPQ = struct
   let%c t = abstract "__mpq_struct"
 
+  type ptr = t Ctypes.abstract Ctypes.ptr
+
   external clear : t ptr -> void = "mpq_clear" [@@noalloc]
+
+  external init : t ptr -> void = "mpq_init"
 
   let make () =
     (* allocate_n zero initializes the memory. It's safe to pass
        such a struct to mpz_clear. *)
-    Ctypes.allocate_n ~finalise:clear t ~count:1
+    let r = Ctypes.allocate_n ~finalise:clear t ~count:1 in
+    init r;
+    r
 
   [%%c
-  external init_set_zz :
+  external set_zz :
     num_:(Z.t[@ocaml_type]) -> den_:(Z.t[@ocaml_type]) -> tptr_:t ptr -> void
     = {|
    value num = $num_; /* not converted. The usual rules for stub code must be
@@ -62,17 +74,16 @@ module MPQ = struct
                       obeyed (accessors, memory management (GC), etc.) */
    __mpq_struct * p = $tptr_; /* already converted to a native c type, will not
                                  be garbage collected during the stub code */
-   mpq_init(p);
    ml_z_mpz_set_z(&p->_mp_num, num);
    ml_z_mpz_set_z(&p->_mp_den, den);
    mpq_canonicalize(p);
 |}]
 
-  let init_set x r = init_set_zz (Q.num x) (Q.den x) r
+  let set x r = set_zz (Q.num x) (Q.den x) r
 
   let of_q x =
     let r = make () in
-    init_set x r;
+    set x r;
     r
 
   [%%c
