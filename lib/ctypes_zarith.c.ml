@@ -62,8 +62,10 @@ module MPQ = struct
                       obeyed (accessors, memory management (GC), etc.) */
    __mpq_struct * p = $tptr_; /* already converted to a native c type, will not
                                  be garbage collected during the stub code */
-   ml_z_mpz_init_set_z(&p->_mp_num, num);
-   ml_z_mpz_init_set_z(&p->_mp_den, den);
+   mpq_init(p);
+   ml_z_mpz_set_z(&p->_mp_num, num);
+   ml_z_mpz_set_z(&p->_mp_den, den);
+   mpq_canonicalize(p);
 |}]
 
   let init_set x r = init_set_zz (Q.num x) (Q.den x) r
